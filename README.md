@@ -6,6 +6,7 @@ A Theremin for the 21st century
   
 ##How to contribute:
   * \<if BostonHacks is still going on, join the team\>
+  * [Get the Leap Motion API](https://developer.leapmotion.com/downloads/skeletal-beta?platform=windows&version=2.3.1.31549)
   * Submit a pull request
   
 ## What we need:
