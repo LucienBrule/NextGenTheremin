@@ -5,7 +5,7 @@ A Theremin for the 21st century
       - (mostly) John F. Kennedy
   
 ##How to contribute:
-  * <if BostonHacks is still going on, join the team>
+  * \<if BostonHacks is still going on, join the team\>
   * Submit a pull request
   
 ## What we need:
