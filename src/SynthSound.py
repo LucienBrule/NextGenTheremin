@@ -1,5 +1,9 @@
-"""PyAudio Example: Play a wave file (callback version)."""
-
+""" 
+@Author:    Lucien Brule <brulel@rpi.edu>
+@Credit:    Various online sources
+@Descr:     Makes a Synth object that can play a continuous tone
+            if you update it fast enough.
+"""
 import pyaudio
 import time
 import math
@@ -54,25 +58,26 @@ class Synth:
         for n in xrange(T):
             self.stream.write(data)
 
-    def set_BASE(self, val):
+    def set_base(self, val):
         self.BASE = val
 
-    def set_BITRATE(self, val):
+    def set_bitrate(self, val):
         self.BITRATE = val
 
-    def set_VOLUME(self, val):
+    def set_volume(self, val):
         self.VOLUME = val
 
-    def set_FREQUENCY(self, val):
+    def set_frequency(self, val):
         self.FREQUENCY = val
 
 
 def main():
     mysound = Synth()
-
+    mysound.set_frequency(4186)
+    mysound.play_tone()
     for x in range(0,100):
         mysound.play_tone()
-        mysound.set_FREQUENCY(mysound.FREQUENCY + x)
+        mysound.set_frequency(mysound.FREQUENCY + x)
 
 if __name__ == "__main__":
     main()
