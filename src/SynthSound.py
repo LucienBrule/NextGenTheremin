@@ -3,65 +3,56 @@
 import pyaudio
 import time
 import math
+import threading
+import struct
+import time
 
 
-class SynthSound:
+class Synth:
 
-    def __init__(self):
-        # default consts
-        self.DEFAULTBASE = .001
-        self.DEFAULTVOLUME = 10
-        self.DEFAULTBITRATE = 16000
-        self.DEFAULTPITCHSHIFT = .001
+    # default consts
+    DEFAULTBASE = .001
+    DEFAULTVOLUME = .5
+    DEFAULTBITRATE = 16000
+    DEFAULTFREQUENCY = 195
+    DURATION = .01
+
+    def __init__(self, interval=1):
+        # # threading
+        # self.interval = interval
+        # thread = threading.Thread(target=self.run, args=())
+        # thread.daemon = True                            # Daemonize thread
+        # thread.start()                                  # Start the execution
+
         # variable variables
         self.BASE = self.DEFAULTBASE
         self.BITRATE = self.DEFAULTBITRATE
         self.VOLUME = self.DEFAULTVOLUME
-        self.PITCHSHIFT = self.DEFAULTPITCHSHIFT  # If it's zero, then there's no beat frequency (for debug)
-
-    def init(self):
-        # instantiate PyAudio (1)
-        p = pyaudio.PyAudio()
-
-        def callback(in_data, frame_count, time_info, status):
-            data = self.get_wave(self.VOLUME, self.PITCHSHIFT)
-            return (data, pyaudio.paContinue)
-
-        # open stream using callback (3)
-        stream = p.open(format=p.get_format_from_width(1),
-                        channels=1,
-                        rate=16000,
-                        output=True,
-                        stream_callback=callback)
-
-        # start the stream (4)
-        stream.start_stream()
-
-        # wait for stream to finish (5)
-        while stream.is_active():
-            time.sleep(self.BASE)
-
+        self.FREQUENCY = 195
+        self.p = pyaudio.PyAudio()
+        self.stream = self.p.open(format=pyaudio.paFloat32,
+                             channels=1,
+                             rate=self.BITRATE,
+                             output=True)
+    def stop(self):
         # stop stream (6)
-        stream.stop_stream()
-        stream.close()
+        self.stream.stop_stream()
+        self.stream.close()
 
         # close PyAudio (7)
-        p.terminate()
+        self.p.terminate()
 
-    def get_wave(self, volume, pitchshift):
-
-        length = self.BASE + self.PITCHSHIFT
-        numberofframes = int(self.BITRATE * length)
-        trailingframes = numberofframes % self.BITRATE
-        WAVEDATA = ''
-        for y in range(0, 50):
-            for x in xrange(numberofframes):
-                WAVEDATA = WAVEDATA + \
-                    chr(int(math.sin(x / ((self.BITRATE / self.VOLUME + y) / math.pi)) * 127 + 128))
-            # fill remainder of frameset with silence
-        for x in xrange(trailingframes):
-            WAVEDATA = WAVEDATA + chr(128)
-        return WAVEDATA
+    def play_tone(self):
+        N = int(self.BITRATE / self.FREQUENCY)
+        T = int(self.FREQUENCY * self.DURATION)  # repeat for T cycles
+        dt = 1.0 / self.BITRATE
+        # 1 cycle
+        tone = (self.VOLUME * math.sin(2 * math.pi * self.FREQUENCY * n * dt)
+                for n in xrange(N))
+        # todo: get the format from the stream; this assumes Float32
+        data = ''.join(struct.pack('f', samp) for samp in tone)
+        for n in xrange(T):
+            self.stream.write(data)
 
     def set_BASE(self, val):
         self.BASE = val
@@ -72,16 +63,16 @@ class SynthSound:
     def set_VOLUME(self, val):
         self.VOLUME = val
 
-    def set_PITCHSHIFT(self, val):
-        self.PITCHSHIFT = val
-
-    def incr_PICHSHIFT(self, val):
-        self.PITCHSHIFT += val
+    def set_FREQUENCY(self, val):
+        self.FREQUENCY = val
 
 
 def main():
-    mysound = SynthSound()
-    mysound.init()
+    mysound = Synth()
+
+    for x in range(0,100):
+        mysound.play_tone()
+        mysound.set_FREQUENCY(mysound.FREQUENCY + x)
 
 if __name__ == "__main__":
     main()
