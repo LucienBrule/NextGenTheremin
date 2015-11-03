@@ -1,15 +1,12 @@
-""" 
+"""
 @Author:    Lucien Brule <brulel@rpi.edu>
 @Credit:    Various online sources
 @Descr:     Makes a Synth object that can play a continuous tone
             if you update it fast enough.
 """
 import pyaudio
-import time
 import math
-import threading
 import struct
-import time
 
 
 class Synth:
@@ -19,14 +16,14 @@ class Synth:
     DEFAULTVOLUME = .5
     DEFAULTBITRATE = 16000
     DEFAULTFREQUENCY = 195
-    DURATION = .01
+    DURATION = .05
 
     def __init__(self, interval=1):
-        # # threading
+        # threading
         # self.interval = interval
         # thread = threading.Thread(target=self.run, args=())
         # thread.daemon = True                            # Daemonize thread
-        # thread.start()                                  # Start the execution
+        # thread.start()                 sub                 # Start the execution
 
         # variable variables
         self.BASE = self.DEFAULTBASE
@@ -35,9 +32,10 @@ class Synth:
         self.FREQUENCY = 195
         self.p = pyaudio.PyAudio()
         self.stream = self.p.open(format=pyaudio.paFloat32,
-                             channels=1,
-                             rate=self.BITRATE,
-                             output=True)
+                                  channels=1,
+                                  rate=self.BITRATE,
+                                  output=True)
+
     def stop(self):
         # stop stream (6)
         self.stream.stop_stream()
@@ -75,7 +73,7 @@ def main():
     mysound = Synth()
     mysound.set_frequency(4186)
     mysound.play_tone()
-    for x in range(0,100):
+    for x in range(0, 100):
         mysound.play_tone()
         mysound.set_frequency(mysound.FREQUENCY + x)
 
